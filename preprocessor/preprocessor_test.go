@@ -23,7 +23,7 @@ func TestRun(t *testing.T) {
 	outputDir := t.TempDir()
 	sessionToken := uuid.NewString()
 	expectedFiles := NewExpectedFiles(datasetId).Build(t)
-	mockServer := newMockServer(t, integrationID, datasetId, expectedFiles)
+	mockServer := newMockServer(t, integrationID, expectedFiles)
 	defer mockServer.Close()
 
 	metadataPP := NewExternalFilesPreProcessor(integrationID, inputDir, outputDir, sessionToken, mockServer.URL, mockServer.URL)
@@ -85,14 +85,13 @@ func (e *ExpectedFiles) AssertEqual(t *testing.T, actualDir string) {
 	}
 }
 
-func newMockServer(t *testing.T, integrationID string, datasetID string, expectedFiles *ExpectedFiles) *httptest.Server {
+func newMockServer(t *testing.T, integrationID string, expectedFiles *ExpectedFiles) *httptest.Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc(fmt.Sprintf("/integrations/%s", integrationID), func(writer http.ResponseWriter, request *http.Request) {
 		require.Equal(t, http.MethodGet, request.Method, "expected method %s for %s, got %s", http.MethodGet, request.URL, request.Method)
 		integration := models.Integration{
 			Uuid:          uuid.NewString(),
 			ApplicationID: 0,
-			DatasetNodeID: datasetID,
 			PackageIDs:    nil,
 			Params:        nil,
 		}

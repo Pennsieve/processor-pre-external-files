@@ -13,6 +13,10 @@ ansiColor('xterm') {
         sh "go test ./..."
     }
 
+    stage("Build Container") {
+        sh "docker build ."
+    }
+
   } catch (e) {
     slackSend(color: '#b20000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) by ${authorName}")
     throw e
