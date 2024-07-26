@@ -68,8 +68,8 @@ func (m *ExternalFilesPreProcessor) Run() error {
 	if err != nil {
 		return err
 	}
-	logger.Info("got integration", slog.Any("params", integration.Params),
-		slog.Any("workflow", integration.Workflow))
+	externalFiles := integration.Params.ExternalFiles
+	logger.Info("got integration", slog.Any("externalFiles", externalFiles))
 
 	return nil
 }

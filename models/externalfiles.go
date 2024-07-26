@@ -1,6 +1,6 @@
 package models
 
-type ExternalFilesParam struct {
+type ExternalFileParam struct {
 	URL     string  `json:"url"`
 	Auth    *Auth   `json:"auth,omitempty"`
 	Queries []Query `json:"queries,omitempty"`

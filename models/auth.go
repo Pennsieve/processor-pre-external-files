@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-const basicAuthType = "basicAuth"
-const bearerType = "bearer"
+const BasicAuthType = "basicAuth"
+const BearerType = "bearer"
 
 type Auth struct {
 	Type string `json:"type"`
@@ -15,7 +15,8 @@ type Auth struct {
 	Params json.RawMessage `json:"params"`
 }
 
-func (a *Auth) unmarshalParams(unmarshalled any) error {
+// UnmarshalParams  visible for testing. unmarshalled should be a pointer to one of the *AuthParams structs defined in this package
+func (a *Auth) UnmarshalParams(unmarshalled any) error {
 	if err := json.Unmarshal(a.Params, &unmarshalled); err != nil {
 		return fmt.Errorf("error unmarshalling %s params: %w", a.Type, err)
 	}
@@ -27,15 +28,15 @@ func (a *Auth) SetAuthentication(request *http.Request) error {
 		return nil
 	}
 	switch a.Type {
-	case basicAuthType:
+	case BasicAuthType:
 		var params BasicAuthParams
-		if err := a.unmarshalParams(&params); err != nil {
+		if err := a.UnmarshalParams(&params); err != nil {
 			return err
 		}
 		request.SetBasicAuth(params.Username, params.Password)
-	case bearerType:
+	case BearerType:
 		var params BearerAuthParams
-		if err := a.unmarshalParams(&params); err != nil {
+		if err := a.UnmarshalParams(&params); err != nil {
 			return err
 		}
 		request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", params.Token))
