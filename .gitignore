@@ -24,3 +24,4 @@ go.work.sum
 /.idea/
 /dev.env
 /data/
+/processor-pre-external-files

@@ -12,25 +12,30 @@ import (
 
 func TestExternalFilesParamUnmarshal_Just_URL(t *testing.T) {
 	expectedURL := "https://example.com/file"
-	jsonString := fmt.Sprintf(`{"url": %q}`, expectedURL)
+	expectedName := "test.txt"
+	jsonString := fmt.Sprintf(`{"url": %q, "name": %q}`, expectedURL, expectedName)
 	var params ExternalFileParam
 	require.NoError(t, json.Unmarshal([]byte(jsonString), &params))
 	assert.Equal(t, expectedURL, params.URL)
+	assert.Equal(t, expectedName, params.Name)
 	assert.Nil(t, params.Auth)
-	assert.Empty(t, params.Queries)
+	assert.Empty(t, params.Query)
 }
 
 func TestExternalFilesParamUnmarshal_Query(t *testing.T) {
 	expectedURL := "https://example.com/file"
+	expectedName := "test.txt"
 	expectedKey := "datasetId"
 	expectedValue := "N:dataset:123-456"
 	expectedKey2 := "id"
 	expectedValue2 := "6"
 	jsonString := fmt.Sprintf(`{
 									"url": %q,
-									"queries": [{%q: %q, %q: %q}]
+									"name": %q,
+									"query": {%q: %q, %q: %q}
 								}`,
 		expectedURL,
+		expectedName,
 		expectedKey,
 		expectedValue,
 		expectedKey2,
@@ -38,10 +43,10 @@ func TestExternalFilesParamUnmarshal_Query(t *testing.T) {
 	var params ExternalFileParam
 	require.NoError(t, json.Unmarshal([]byte(jsonString), &params))
 	assert.Equal(t, expectedURL, params.URL)
+	assert.Equal(t, expectedName, params.Name)
 	assert.Nil(t, params.Auth)
-	assert.Len(t, params.Queries, 1)
 
-	query := params.Queries[0]
+	query := params.Query
 	assert.Len(t, query, 2)
 
 	assert.Contains(t, query, expectedKey)
@@ -51,55 +56,25 @@ func TestExternalFilesParamUnmarshal_Query(t *testing.T) {
 	assert.Equal(t, expectedValue2, query[expectedKey2])
 }
 
-func TestExternalFilesParamUnmarshal_Queries(t *testing.T) {
-	expectedURL := "https://example.com/file"
-	expectedKey := "datasetId"
-	expectedValue := "N:dataset:123-456"
-	expectedKey2 := "id"
-	expectedValue2 := "6"
-	jsonString := fmt.Sprintf(`{
-									"url": %q,
-									"queries": [{%q: %q}, {%q: %q}]
-								}`,
-		expectedURL,
-		expectedKey,
-		expectedValue,
-		expectedKey2,
-		expectedValue2)
-	var params ExternalFileParam
-	require.NoError(t, json.Unmarshal([]byte(jsonString), &params))
-	assert.Equal(t, expectedURL, params.URL)
-	assert.Nil(t, params.Auth)
-	assert.Len(t, params.Queries, 2)
-
-	query1 := params.Queries[0]
-	assert.Len(t, query1, 1)
-
-	assert.Contains(t, query1, expectedKey)
-	assert.Equal(t, expectedValue, query1[expectedKey])
-
-	query2 := params.Queries[1]
-
-	assert.Contains(t, query2, expectedKey2)
-	assert.Equal(t, expectedValue2, query2[expectedKey2])
-
-}
-
 func TestExternalFilesParamUnmarshal_Basic_Auth(t *testing.T) {
 	expectedURL := "https://example.com/file"
+	expectedName := "test.txt"
 	expectedUsername := "joe"
 	expectedPassword := uuid.NewString()
 	jsonString := fmt.Sprintf(`{
 									"url": %q,
+									"name": %q,
 									"auth": {"type": "basicAuth", "params": {"username": %q, "password": %q}}
 								}`,
 		expectedURL,
+		expectedName,
 		expectedUsername,
 		expectedPassword)
 	var params ExternalFileParam
 	require.NoError(t, json.Unmarshal([]byte(jsonString), &params))
 	assert.Equal(t, expectedURL, params.URL)
-	assert.Empty(t, params.Queries)
+	assert.Equal(t, expectedName, params.Name)
+	assert.Empty(t, params.Query)
 
 	assert.NotNil(t, params.Auth)
 
@@ -117,17 +92,21 @@ func TestExternalFilesParamUnmarshal_Basic_Auth(t *testing.T) {
 
 func TestExternalFilesParamUnmarshal_Bearer_Auth(t *testing.T) {
 	expectedURL := "https://example.com/file"
+	expectedName := "test.txt"
 	expectedToken := uuid.NewString()
 	jsonString := fmt.Sprintf(`{
 									"url": %q,
+									"name": %q,
 									"auth": {"type": "bearer", "params": {"token": %q}}
 								}`,
 		expectedURL,
+		expectedName,
 		expectedToken)
 	var params ExternalFileParam
 	require.NoError(t, json.Unmarshal([]byte(jsonString), &params))
 	assert.Equal(t, expectedURL, params.URL)
-	assert.Empty(t, params.Queries)
+	assert.Equal(t, expectedName, params.Name)
+	assert.Empty(t, params.Query)
 
 	assert.NotNil(t, params.Auth)
 
