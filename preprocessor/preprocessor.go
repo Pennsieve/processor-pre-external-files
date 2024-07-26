@@ -115,7 +115,7 @@ func newRequest(externalFile models.ExternalFileParam) (*http.Request, error) {
 	fullURL.RawQuery = urlQuery.Encode()
 	req, err := http.NewRequest(http.MethodGet, fullURL.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("error creating requeest for %s: %w", externalFile.URL, err)
+		return nil, fmt.Errorf("error creating request for %s: %w", externalFile.URL, err)
 	}
 	if err := externalFile.Auth.SetAuthentication(req); err != nil {
 		return nil, err

@@ -44,6 +44,11 @@ func checkHTTPStatus(response *http.Response) error {
 	}
 	if http.StatusBadRequest <= response.StatusCode && response.StatusCode < 600 {
 		responseBody := readBody()
+		var displayBody string
+		if len(responseBody) > 1000 {
+			displayBody = fmt.Sprintf("<truncated for logging> %s", string(responseBody[:1000]))
+		}
+		displayBody = string(responseBody)
 		errorType := "client"
 		if response.StatusCode >= http.StatusInternalServerError {
 			errorType = "server"
@@ -53,7 +58,7 @@ func checkHTTPStatus(response *http.Response) error {
 			response.Status,
 			response.Request.Method,
 			response.Request.URL,
-			string(responseBody))
+			displayBody)
 	}
 	return nil
 }
