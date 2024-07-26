@@ -2,13 +2,10 @@ package pennsieve
 
 import (
 	"fmt"
-	"github.com/pennsieve/processor-pre-external-files/logging"
 	"github.com/pennsieve/processor-pre-external-files/util"
 	"io"
 	"net/http"
 )
-
-var logger = logging.PackageLogger("pennsieve")
 
 type Session struct {
 	Token    string
