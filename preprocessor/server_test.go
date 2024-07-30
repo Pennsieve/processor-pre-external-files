@@ -1,10 +1,7 @@
 package preprocessor
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/pennsieve/processor-pre-external-files/models"
 	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
@@ -40,20 +37,7 @@ func (m *MockServer) URL() string {
 	return fmt.Sprintf("http://%s", m.Server.Listener.Addr().String())
 }
 
-func (m *MockServer) SetExpectedHandlers(t *testing.T, integrationID string, expectedFiles *ExpectedFiles) {
-	m.Mux.HandleFunc(fmt.Sprintf("/integrations/%s", integrationID), func(writer http.ResponseWriter, request *http.Request) {
-		require.Equal(t, http.MethodGet, request.Method, "expected method %s for %s, got %s", http.MethodGet, request.URL, request.Method)
-		integration := models.Integration{
-			Uuid:          uuid.NewString(),
-			ApplicationID: 0,
-			PackageIDs:    nil,
-			Params:        models.IntegrationParams{ExternalFiles: expectedFiles.ExternalFileParams},
-		}
-		integrationResponse, err := json.Marshal(integration)
-		require.NoError(t, err)
-		_, err = writer.Write(integrationResponse)
-		require.NoError(t, err)
-	})
+func (m *MockServer) SetExpectedHandlers(t *testing.T, expectedFiles *ExpectedFiles) {
 	for _, expectedFile := range expectedFiles.Files {
 		m.Mux.HandleFunc(expectedFile.APIPath, expectedFile.HandlerFunc(t))
 	}

@@ -48,7 +48,7 @@ func TestRun(t *testing.T) {
 		},
 	}
 	expectedFiles := NewExpectedFiles(externalFileParams).Build(t, mockURL)
-	mock.SetExpectedHandlers(t, integrationID, expectedFiles)
+	mock.SetExpectedHandlers(t, expectedFiles)
 	mock.Start()
 
 	metadataPP := NewExternalFilesPreProcessor(integrationID, inputDir, outputDir, externalFileParams)
