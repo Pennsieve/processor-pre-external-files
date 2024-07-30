@@ -34,28 +34,19 @@ func TestFromEnv(t *testing.T) {
 	fmt.Println(string(externalFilesBytes))
 	t.Setenv(ExternalFilesKey, string(externalFilesBytes))
 
-	expectedSessionToken := uuid.NewString()
-	t.Setenv(SessionTokenKey, expectedSessionToken)
 	expectedIntegrationID := uuid.NewString()
 	t.Setenv(IntegrationIDKey, expectedIntegrationID)
 	expectedInputDirectory := fmt.Sprintf("input/%s", uuid.NewString())
 	t.Setenv(InputDirectoryKey, expectedInputDirectory)
 	expectedOutputDirectory := fmt.Sprintf("output/%s", uuid.NewString())
 	t.Setenv(OutputDirectoryKey, expectedOutputDirectory)
-	expectedAPIHost := "https://pennsieve.example.com"
-	t.Setenv(PennsieveAPIHostKey, expectedAPIHost)
-	expectedAPI2Host := "https://pennsieve2.example.com"
-	t.Setenv(PennsieveAPI2HostKey, expectedAPI2Host)
 
 	processor, err := FromEnv()
 	require.NoError(t, err)
 
-	assert.Equal(t, expectedSessionToken, processor.Pennsieve.Token)
 	assert.Equal(t, expectedIntegrationID, processor.IntegrationID)
 	assert.Equal(t, expectedInputDirectory, processor.InputDirectory)
 	assert.Equal(t, expectedOutputDirectory, processor.OutputDirectory)
-	assert.Equal(t, expectedAPIHost, processor.Pennsieve.APIHost)
-	assert.Equal(t, expectedAPI2Host, processor.Pennsieve.API2Host)
 
 	actualExternalFiles := processor.ExternalFiles
 	assert.NotNil(t, actualExternalFiles)

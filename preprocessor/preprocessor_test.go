@@ -14,9 +14,6 @@ func TestRun(t *testing.T) {
 	inputDir := t.TempDir()
 	outputDir := t.TempDir()
 
-	// For mock access to Pennsieve
-	sessionToken := uuid.NewString()
-
 	// For basic auth file download
 	externalUsername := uuid.NewString()
 	externalPassword := uuid.NewString()
@@ -54,7 +51,7 @@ func TestRun(t *testing.T) {
 	mock.SetExpectedHandlers(t, integrationID, expectedFiles)
 	mock.Start()
 
-	metadataPP := NewExternalFilesPreProcessor(integrationID, inputDir, outputDir, externalFileParams, sessionToken, mockURL, mockURL)
+	metadataPP := NewExternalFilesPreProcessor(integrationID, inputDir, outputDir, externalFileParams)
 
 	require.NoError(t, metadataPP.Run())
 	expectedFiles.AssertEqual(t, inputDir)

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/pennsieve/processor-pre-external-files/logging"
 	"github.com/pennsieve/processor-pre-external-files/models"
-	"github.com/pennsieve/processor-pre-external-files/pennsieve"
 	"github.com/pennsieve/processor-pre-external-files/util"
 	"io"
 	"log/slog"
@@ -21,22 +20,17 @@ type ExternalFilesPreProcessor struct {
 	InputDirectory  string
 	OutputDirectory string
 	ExternalFiles   models.ExternalFileParams
-	Pennsieve       *pennsieve.Session
 }
 
 func NewExternalFilesPreProcessor(integrationID string,
 	inputDirectory string,
 	outputDirectory string,
-	externalFiles models.ExternalFileParams,
-	sessionToken string,
-	apiHost string,
-	api2Host string) *ExternalFilesPreProcessor {
+	externalFiles models.ExternalFileParams) *ExternalFilesPreProcessor {
 	return &ExternalFilesPreProcessor{
 		IntegrationID:   integrationID,
 		InputDirectory:  inputDirectory,
 		OutputDirectory: outputDirectory,
 		ExternalFiles:   externalFiles,
-		Pennsieve:       pennsieve.NewSession(sessionToken, apiHost, api2Host),
 	}
 }
 
