@@ -11,9 +11,8 @@ import (
 // No tests, just test helpers
 
 type MockServer struct {
-	Mux           *http.ServeMux
-	Server        *httptest.Server
-	ExpectedFiles *ExpectedFiles
+	Mux    *http.ServeMux
+	Server *httptest.Server
 }
 
 func NewMockServer() *MockServer {
