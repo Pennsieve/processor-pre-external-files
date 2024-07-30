@@ -11,6 +11,8 @@ type ExternalFileParam struct {
 
 type Query map[string]string
 
+type ExternalFileParams []ExternalFileParam
+
 func (e ExternalFileParam) Logger(logger *slog.Logger) *slog.Logger {
 	authType := "none"
 	if e.Auth != nil {

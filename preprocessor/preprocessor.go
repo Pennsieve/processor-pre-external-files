@@ -20,12 +20,14 @@ type ExternalFilesPreProcessor struct {
 	IntegrationID   string
 	InputDirectory  string
 	OutputDirectory string
+	ExternalFiles   models.ExternalFileParams
 	Pennsieve       *pennsieve.Session
 }
 
 func NewExternalFilesPreProcessor(integrationID string,
 	inputDirectory string,
 	outputDirectory string,
+	externalFiles models.ExternalFileParams,
 	sessionToken string,
 	apiHost string,
 	api2Host string) *ExternalFilesPreProcessor {
@@ -33,46 +35,14 @@ func NewExternalFilesPreProcessor(integrationID string,
 		IntegrationID:   integrationID,
 		InputDirectory:  inputDirectory,
 		OutputDirectory: outputDirectory,
+		ExternalFiles:   externalFiles,
 		Pennsieve:       pennsieve.NewSession(sessionToken, apiHost, api2Host),
 	}
 }
 
-func FromEnv() (*ExternalFilesPreProcessor, error) {
-	integrationID, err := LookupRequiredEnvVar("INTEGRATION_ID")
-	if err != nil {
-		return nil, err
-	}
-	inputDirectory, err := LookupRequiredEnvVar("INPUT_DIR")
-	if err != nil {
-		return nil, err
-	}
-	outputDirectory, err := LookupRequiredEnvVar("OUTPUT_DIR")
-	if err != nil {
-		return nil, err
-	}
-	sessionToken, err := LookupRequiredEnvVar("SESSION_TOKEN")
-	if err != nil {
-		return nil, err
-	}
-	apiHost, err := LookupRequiredEnvVar("PENNSIEVE_API_HOST")
-	if err != nil {
-		return nil, err
-	}
-	api2Host, err := LookupRequiredEnvVar("PENNSIEVE_API_HOST2")
-	if err != nil {
-		return nil, err
-	}
-	return NewExternalFilesPreProcessor(integrationID, inputDirectory, outputDirectory, sessionToken, apiHost, api2Host), nil
-}
-
 func (m *ExternalFilesPreProcessor) Run() error {
-	// get integration info
-	integration, err := m.Pennsieve.GetIntegration(m.IntegrationID)
-	if err != nil {
-		return err
-	}
-	externalFiles := integration.Params.ExternalFiles
-	logger.Info("got integration", slog.String("integrationID", m.IntegrationID))
+	logger.Info("processing integration", slog.String("integrationID", m.IntegrationID))
+	externalFiles := m.ExternalFiles
 
 	if len(externalFiles) == 0 {
 		logger.Info("integration contained no external files")

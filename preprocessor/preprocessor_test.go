@@ -54,7 +54,7 @@ func TestRun(t *testing.T) {
 	mock.SetExpectedHandlers(t, integrationID, expectedFiles)
 	mock.Start()
 
-	metadataPP := NewExternalFilesPreProcessor(integrationID, inputDir, outputDir, sessionToken, mockURL, mockURL)
+	metadataPP := NewExternalFilesPreProcessor(integrationID, inputDir, outputDir, externalFileParams, sessionToken, mockURL, mockURL)
 
 	require.NoError(t, metadataPP.Run())
 	expectedFiles.AssertEqual(t, inputDir)
