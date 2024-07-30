@@ -31,8 +31,8 @@ func (m *MockServer) Close() {
 	m.Server.Close()
 }
 
-// URL is necessary because we need the URL before adding handlers, so before the server starts
-// and httptest.Server.URL is empty before it starts. This work-around taken from httptest.NewServer() code.
+// URL() function is necessary because we need the server's URL before adding handlers, that is, before the server starts.
+// But httptest.Server.URL is empty before server starts. This work-around taken from httptest.NewServer() code.
 func (m *MockServer) URL() string {
 	return fmt.Sprintf("http://%s", m.Server.Listener.Addr().String())
 }
