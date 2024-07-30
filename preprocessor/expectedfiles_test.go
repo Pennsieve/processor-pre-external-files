@@ -47,21 +47,18 @@ func FromExternalFileParam(t *testing.T, externalFileParam models.ExternalFilePa
 	}
 
 	authHeader := ""
-	if externalFileParam.Auth != nil {
-		switch externalFileParam.Auth.Type {
-		case models.BasicAuthType:
-			var params models.BasicAuthParams
-			require.NoError(t, externalFileParam.Auth.UnmarshalParams(&params))
-			toEncode := fmt.Sprintf("%s:%s", params.Username, params.Password)
-			authHeader = fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(toEncode)))
-		case models.BearerType:
-			var params models.BearerAuthParams
-			require.NoError(t, externalFileParam.Auth.UnmarshalParams(&params))
-			authHeader = fmt.Sprintf("Bearer %s", params.Token)
-		default:
-			require.Fail(t, "unknown auth type", externalFileParam.Auth.Type)
-		}
-
+	authParams, err := externalFileParam.Auth.UnmarshallParams()
+	require.NoError(t, err)
+	switch p := authParams.(type) {
+	case nil:
+		// no auth, nothing to do
+	case models.BasicAuthParams:
+		toEncode := fmt.Sprintf("%s:%s", p.Username, p.Password)
+		authHeader = fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(toEncode)))
+	case models.BearerAuthParams:
+		authHeader = fmt.Sprintf("Bearer %s", p.Token)
+	default:
+		require.Fail(t, "unknown auth type", externalFileParam.Auth.Type)
 	}
 
 	return ExpectedFile{
