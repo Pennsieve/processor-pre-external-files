@@ -16,8 +16,12 @@ To run tests:
 
 To run integration test:
 
-1. Create an integration with the URLs you would like to download.
-2. Copy `dev.env.example` to `dev.env`
-3. In `dev.env` update `SESSION_TOKEN` with a valid token and `INTEGRATION_ID` with the id from the first step.
-4. Run `./run-integration-test.sh dev.env`
+1. Copy `dev.env.example` to `dev.env`
+2. Run `./run-integration-test.sh dev.env`
 
+The `EXTERNAL_FILES` value in `dev.env.example` contains several https://httpbin.org URLs which will download json
+files that
+can be used to verify that query params and authentication are being handled correctly.
+
+If you wish to test with other external files, then edit the value of `EXTERNAL_FILES` in `dev.env` and
+run `./run-integration-test.sh dev.env` again.

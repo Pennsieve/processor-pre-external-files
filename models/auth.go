@@ -15,31 +15,50 @@ type Auth struct {
 	Params json.RawMessage `json:"params"`
 }
 
-// UnmarshalParams  visible for testing. unmarshalled should be a pointer to one of the *AuthParams structs defined in this package
-func (a *Auth) UnmarshalParams(unmarshalled any) error {
+// unmarshalParams  unmarshalled should be a pointer to one of the *AuthParams structs defined in this package
+func (a *Auth) unmarshalParams(unmarshalled any) error {
 	if err := json.Unmarshal(a.Params, &unmarshalled); err != nil {
 		return fmt.Errorf("error unmarshalling %s params: %w", a.Type, err)
 	}
 	return nil
 }
 
-func (a *Auth) SetAuthentication(request *http.Request) error {
+// UnmarshallParams if no error, return value type will either be BasicAuthParams or BearerAuthParams
+func (a *Auth) UnmarshallParams() (any, error) {
 	if a == nil {
-		return nil
+		return nil, nil
 	}
 	switch a.Type {
 	case BasicAuthType:
 		var params BasicAuthParams
-		if err := a.UnmarshalParams(&params); err != nil {
-			return err
+		if err := a.unmarshalParams(&params); err != nil {
+			return nil, err
 		}
-		request.SetBasicAuth(params.Username, params.Password)
+		return params, nil
 	case BearerType:
 		var params BearerAuthParams
-		if err := a.UnmarshalParams(&params); err != nil {
-			return err
+		if err := a.unmarshalParams(&params); err != nil {
+			return nil, err
 		}
-		request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", params.Token))
+		return params, nil
+	default:
+		return nil, fmt.Errorf("unknown auth type: %s", a.Type)
+	}
+}
+
+func (a *Auth) SetAuthentication(request *http.Request) error {
+	authParams, err := a.UnmarshallParams()
+	if err != nil {
+		return err
+	}
+	switch p := authParams.(type) {
+	case nil:
+		// No auth, so nothing to set
+		return nil
+	case BasicAuthParams:
+		request.SetBasicAuth(p.Username, p.Password)
+	case BearerAuthParams:
+		request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", p.Token))
 	default:
 		return fmt.Errorf("unknown auth type: %s", a.Type)
 	}
