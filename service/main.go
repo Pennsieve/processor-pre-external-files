@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/pennsieve/processor-pre-external-files/logging"
-	"github.com/pennsieve/processor-pre-external-files/preprocessor"
+	"github.com/pennsieve/processor-pre-external-files/service/logging"
+	"github.com/pennsieve/processor-pre-external-files/service/preprocessor"
 	"log/slog"
 	"os"
 )

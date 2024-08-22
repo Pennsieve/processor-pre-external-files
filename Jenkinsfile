@@ -14,7 +14,7 @@ ansiColor('xterm') {
     }
 
     stage("Run Tests") {
-        sh "go test -v ./..."
+        sh "cd ./service && go test -v ./..."
     }
 
   } catch (e) {
