@@ -6,6 +6,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/pennsieve/processor-pre-external-files/models"
 	"github.com/stretchr/testify/require"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -47,11 +49,16 @@ func TestRun(t *testing.T) {
 			Query: map[string]string{"limit": "1000", "offset": "0"},
 		},
 	}
+	// Create config file where pre-processor will expect it
+	configFile, err := os.Create(filepath.Join(inputDir, ConfigFilename))
+	require.NoError(t, err)
+	require.NoError(t, json.NewEncoder(configFile).Encode(externalFileParams))
+
 	expectedFiles := NewExpectedFiles(externalFileParams).Build(t, mockURL)
 	mock.SetExpectedHandlers(t, expectedFiles)
 	mock.Start()
 
-	metadataPP := NewExternalFilesPreProcessor(integrationID, inputDir, outputDir, externalFileParams)
+	metadataPP := NewExternalFilesPreProcessor(integrationID, inputDir, outputDir)
 
 	require.NoError(t, metadataPP.Run())
 	expectedFiles.AssertEqual(t, inputDir)

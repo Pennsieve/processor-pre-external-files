@@ -1,6 +1,7 @@
 package preprocessor
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/pennsieve/processor-pre-external-files/logging"
 	"github.com/pennsieve/processor-pre-external-files/models"
@@ -15,28 +16,31 @@ import (
 
 var logger = logging.PackageLogger("preprocessor")
 
+const ConfigFilename = "external-files.json"
+
 type ExternalFilesPreProcessor struct {
 	IntegrationID   string
 	InputDirectory  string
 	OutputDirectory string
-	ExternalFiles   models.ExternalFileParams
 }
 
 func NewExternalFilesPreProcessor(integrationID string,
 	inputDirectory string,
-	outputDirectory string,
-	externalFiles models.ExternalFileParams) *ExternalFilesPreProcessor {
+	outputDirectory string) *ExternalFilesPreProcessor {
 	return &ExternalFilesPreProcessor{
 		IntegrationID:   integrationID,
 		InputDirectory:  inputDirectory,
 		OutputDirectory: outputDirectory,
-		ExternalFiles:   externalFiles,
 	}
 }
 
 func (m *ExternalFilesPreProcessor) Run() error {
 	logger.Info("processing integration", slog.String("integrationID", m.IntegrationID))
-	externalFiles := m.ExternalFiles
+	configPath := filepath.Join(m.InputDirectory, ConfigFilename)
+	externalFiles, err := readConfig(configPath)
+	if err != nil {
+		return err
+	}
 
 	if len(externalFiles) == 0 {
 		logger.Info("integration contained no external files")
@@ -65,6 +69,18 @@ func (m *ExternalFilesPreProcessor) Run() error {
 	logger.Info("downloads complete")
 
 	return nil
+}
+
+func readConfig(configPath string) (models.ExternalFileParams, error) {
+	var config models.ExternalFileParams
+	configFile, err := os.Open(configPath)
+	if err != nil {
+		return config, fmt.Errorf("error opening config file %s: %w", configPath, err)
+	}
+	if err := json.NewDecoder(configFile).Decode(&config); err != nil {
+		return config, fmt.Errorf("error decoding config file %s: %w", configPath, err)
+	}
+	return config, nil
 }
 
 func newRequest(externalFile models.ExternalFileParam) (*http.Request, error) {

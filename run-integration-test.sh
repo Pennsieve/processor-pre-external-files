@@ -28,12 +28,15 @@ fi
 echo "** deleting $root_dir/$local_volume **"
 rm -fR "$local_volume"
 
-echo "** creating required directories **"
+echo "** creating required directories and config **"
 # input
 if [[ "$INPUT_DIR" =~ ^$docker_volume ]]; then
   local_input_dir=${root_dir}/${local_volume}/${INPUT_DIR#$docker_volume/}
   mkdir -p "$local_input_dir"
   echo "created $local_input_dir"
+  config=${root_dir}/external-files.json
+  cp "$config" "$local_input_dir"
+  echo "copied $config to $local_input_dir"
 else
   echo "expected $INPUT_DIR to start with $docker_volume; exiting"
   exit 1
@@ -49,5 +52,7 @@ else
   exit 1
 fi
 
-docker-compose up --build
+#docker-compose up --build
+docker compose run --build --rm pre-processor
+
 

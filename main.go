@@ -21,7 +21,6 @@ func main() {
 		slog.String("integrationID", m.IntegrationID),
 		slog.String("inputDirectory", m.InputDirectory),
 		slog.String("outputDirectory", m.OutputDirectory),
-		slog.Any("externalFiles", m.ExternalFiles),
 	)
 
 	if err := m.Run(); err != nil {
