@@ -20,9 +20,20 @@ root_dir=$(pwd)
 local_volume="data"
 docker_volume="/service/data"
 
+config_file_name="external-files.json"
+local_config=${root_dir}/${config_file_name}
+
+
 if [ -z "$INTEGRATION_ID" ]; then
   echo "no value set for INTEGRATION_ID; exiting"
   exit 1
+fi
+
+if [ ! -f $local_config ]; then
+  echo "missing config file $local_config; exiting"
+  exit 1
+else
+  echo "using config file $local_config"
 fi
 
 echo "** deleting $root_dir/$local_volume **"
@@ -34,9 +45,8 @@ if [[ "$INPUT_DIR" =~ ^$docker_volume ]]; then
   local_input_dir=${root_dir}/${local_volume}/${INPUT_DIR#$docker_volume/}
   mkdir -p "$local_input_dir"
   echo "created $local_input_dir"
-  config=${root_dir}/external-files.json
-  cp "$config" "$local_input_dir"
-  echo "copied $config to $local_input_dir"
+  cp "$local_config" "$local_input_dir"
+  echo "copied $local_config to $local_input_dir"
 else
   echo "expected $INPUT_DIR to start with $docker_volume; exiting"
   exit 1

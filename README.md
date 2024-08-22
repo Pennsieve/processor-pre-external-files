@@ -14,7 +14,8 @@ On arm64 architectures:
 
 To run tests:
 
-` go test ./...`
+1. `cd service`
+2. ` go test ./...`
 
 To run integration test:
 
