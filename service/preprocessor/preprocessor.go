@@ -16,28 +16,28 @@ import (
 
 var logger = logging.PackageLogger("preprocessor")
 
-const ConfigFilename = "external-files.json"
-
 type ExternalFilesPreProcessor struct {
 	IntegrationID   string
 	InputDirectory  string
 	OutputDirectory string
+	ConfigFile      string
 }
 
 func NewExternalFilesPreProcessor(integrationID string,
 	inputDirectory string,
-	outputDirectory string) *ExternalFilesPreProcessor {
+	outputDirectory string,
+	configFile string) *ExternalFilesPreProcessor {
 	return &ExternalFilesPreProcessor{
 		IntegrationID:   integrationID,
 		InputDirectory:  inputDirectory,
 		OutputDirectory: outputDirectory,
+		ConfigFile:      configFile,
 	}
 }
 
 func (m *ExternalFilesPreProcessor) Run() error {
 	logger.Info("processing integration", slog.String("integrationID", m.IntegrationID))
-	configPath := filepath.Join(m.InputDirectory, ConfigFilename)
-	externalFiles, err := readConfig(configPath)
+	externalFiles, err := readConfig(m.ConfigFile)
 	if err != nil {
 		return err
 	}

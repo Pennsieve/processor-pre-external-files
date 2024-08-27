@@ -15,6 +15,7 @@ func TestRun(t *testing.T) {
 	integrationID := uuid.NewString()
 	inputDir := t.TempDir()
 	outputDir := t.TempDir()
+	configDir := t.TempDir()
 
 	// For basic auth file download
 	externalUsername := uuid.NewString()
@@ -50,7 +51,8 @@ func TestRun(t *testing.T) {
 		},
 	}
 	// Create config file where pre-processor will expect it
-	configFile, err := os.Create(filepath.Join(inputDir, ConfigFilename))
+	configFilePath := filepath.Join(configDir, DefaultConfigFilename)
+	configFile, err := os.Create(configFilePath)
 	require.NoError(t, err)
 	require.NoError(t, json.NewEncoder(configFile).Encode(externalFileParams))
 
@@ -58,7 +60,7 @@ func TestRun(t *testing.T) {
 	mock.SetExpectedHandlers(t, expectedFiles)
 	mock.Start()
 
-	metadataPP := NewExternalFilesPreProcessor(integrationID, inputDir, outputDir)
+	metadataPP := NewExternalFilesPreProcessor(integrationID, inputDir, outputDir, configFilePath)
 
 	require.NoError(t, metadataPP.Run())
 	expectedFiles.AssertEqual(t, inputDir)

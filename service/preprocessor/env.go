@@ -1,9 +1,13 @@
 package preprocessor
 
+import "path/filepath"
+
 const IntegrationIDKey = "INTEGRATION_ID"
 const InputDirectoryKey = "INPUT_DIR"
 const OutputDirectoryKey = "OUTPUT_DIR"
-const ExternalFilesKey = "EXTERNAL_FILES"
+const ConfigDirectoryKey = "CONFIG_DIR"
+
+const DefaultConfigFilename = "config.json"
 
 func FromEnv() (*ExternalFilesPreProcessor, error) {
 	integrationID, err := LookupRequiredEnvVar(IntegrationIDKey)
@@ -18,5 +22,10 @@ func FromEnv() (*ExternalFilesPreProcessor, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewExternalFilesPreProcessor(integrationID, inputDirectory, outputDirectory), nil
+	configDirectory, err := LookupRequiredEnvVar(ConfigDirectoryKey)
+	if err != nil {
+		return nil, err
+	}
+	configFile := filepath.Join(configDirectory, DefaultConfigFilename)
+	return NewExternalFilesPreProcessor(integrationID, inputDirectory, outputDirectory, configFile), nil
 }
