@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/pennsieve/processor-pre-external-files/models"
+	"github.com/pennsieve/processor-pre-external-files/service/models"
 	"github.com/stretchr/testify/require"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -13,6 +15,7 @@ func TestRun(t *testing.T) {
 	integrationID := uuid.NewString()
 	inputDir := t.TempDir()
 	outputDir := t.TempDir()
+	configDir := t.TempDir()
 
 	// For basic auth file download
 	externalUsername := uuid.NewString()
@@ -47,11 +50,17 @@ func TestRun(t *testing.T) {
 			Query: map[string]string{"limit": "1000", "offset": "0"},
 		},
 	}
+	// Create config file where pre-processor will expect it
+	configFilePath := filepath.Join(configDir, DefaultConfigFilename)
+	configFile, err := os.Create(configFilePath)
+	require.NoError(t, err)
+	require.NoError(t, json.NewEncoder(configFile).Encode(externalFileParams))
+
 	expectedFiles := NewExpectedFiles(externalFileParams).Build(t, mockURL)
 	mock.SetExpectedHandlers(t, expectedFiles)
 	mock.Start()
 
-	metadataPP := NewExternalFilesPreProcessor(integrationID, inputDir, outputDir, externalFileParams)
+	metadataPP := NewExternalFilesPreProcessor(integrationID, inputDir, outputDir, configFilePath)
 
 	require.NoError(t, metadataPP.Run())
 	expectedFiles.AssertEqual(t, inputDir)

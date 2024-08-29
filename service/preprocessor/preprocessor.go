@@ -1,10 +1,11 @@
 package preprocessor
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/pennsieve/processor-pre-external-files/logging"
-	"github.com/pennsieve/processor-pre-external-files/models"
-	"github.com/pennsieve/processor-pre-external-files/util"
+	"github.com/pennsieve/processor-pre-external-files/service/logging"
+	"github.com/pennsieve/processor-pre-external-files/service/models"
+	"github.com/pennsieve/processor-pre-external-files/service/util"
 	"io"
 	"log/slog"
 	"net/http"
@@ -19,24 +20,27 @@ type ExternalFilesPreProcessor struct {
 	IntegrationID   string
 	InputDirectory  string
 	OutputDirectory string
-	ExternalFiles   models.ExternalFileParams
+	ConfigFile      string
 }
 
 func NewExternalFilesPreProcessor(integrationID string,
 	inputDirectory string,
 	outputDirectory string,
-	externalFiles models.ExternalFileParams) *ExternalFilesPreProcessor {
+	configFile string) *ExternalFilesPreProcessor {
 	return &ExternalFilesPreProcessor{
 		IntegrationID:   integrationID,
 		InputDirectory:  inputDirectory,
 		OutputDirectory: outputDirectory,
-		ExternalFiles:   externalFiles,
+		ConfigFile:      configFile,
 	}
 }
 
 func (m *ExternalFilesPreProcessor) Run() error {
 	logger.Info("processing integration", slog.String("integrationID", m.IntegrationID))
-	externalFiles := m.ExternalFiles
+	externalFiles, err := readConfig(m.ConfigFile)
+	if err != nil {
+		return err
+	}
 
 	if len(externalFiles) == 0 {
 		logger.Info("integration contained no external files")
@@ -65,6 +69,18 @@ func (m *ExternalFilesPreProcessor) Run() error {
 	logger.Info("downloads complete")
 
 	return nil
+}
+
+func readConfig(configPath string) (models.ExternalFileParams, error) {
+	var config models.ExternalFileParams
+	configFile, err := os.Open(configPath)
+	if err != nil {
+		return config, fmt.Errorf("error opening config file %s: %w", configPath, err)
+	}
+	if err := json.NewDecoder(configFile).Decode(&config); err != nil {
+		return config, fmt.Errorf("error decoding config file %s: %w", configPath, err)
+	}
+	return config, nil
 }
 
 func newRequest(externalFile models.ExternalFileParam) (*http.Request, error) {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/pennsieve/processor-pre-external-files/logging"
-	"github.com/pennsieve/processor-pre-external-files/preprocessor"
+	"github.com/pennsieve/processor-pre-external-files/service/logging"
+	"github.com/pennsieve/processor-pre-external-files/service/preprocessor"
 	"log/slog"
 	"os"
 )
@@ -21,7 +21,7 @@ func main() {
 		slog.String("integrationID", m.IntegrationID),
 		slog.String("inputDirectory", m.InputDirectory),
 		slog.String("outputDirectory", m.OutputDirectory),
-		slog.Any("externalFiles", m.ExternalFiles),
+		slog.String("configFile", m.ConfigFile),
 	)
 
 	if err := m.Run(); err != nil {

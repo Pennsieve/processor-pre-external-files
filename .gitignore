@@ -25,3 +25,4 @@ go.work.sum
 /dev.env
 /data/
 /processor-pre-external-files
+/config.json

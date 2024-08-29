@@ -1,4 +1,4 @@
-module github.com/pennsieve/processor-pre-external-files
+module github.com/pennsieve/processor-pre-external-files/service
 
 go 1.21
 

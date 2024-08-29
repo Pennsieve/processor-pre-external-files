@@ -1,0 +1,31 @@
+[
+  {
+    "url": "https://httpbin.org/get",
+    "name": "no-auth-with-query.json",
+    "query": {
+      "param1": "9",
+      "param2": "xyz"
+    }
+  },
+  {
+    "url": "https://httpbin.org/basic-auth/joe/JoE123",
+    "name": "basic-auth.json",
+    "auth": {
+      "type": "basicAuth",
+      "params": {
+        "username": "joe",
+        "password": "JoE123"
+      }
+    }
+  },
+  {
+    "url": "https://httpbin.org/bearer",
+    "name": "bearer-auth.json",
+    "auth": {
+      "type": "bearer",
+      "params": {
+        "token": "JoE123-api-key"
+      }
+    }
+  }
+]

@@ -7,7 +7,7 @@ RUN apt clean && apt-get update && apt-get -y install alien
 # install dependencies
 
 
-COPY . .
+COPY service ./
 
 RUN ls /service
 
