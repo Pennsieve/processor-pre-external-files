@@ -1,13 +1,19 @@
 FROM golang:bullseye
 
-WORKDIR /service
-
+# install dependencies
 RUN apt clean && apt-get update && apt-get -y install alien
 
-# install dependencies
+WORKDIR /client
 
+COPY client ./
+
+RUN ls /client
+
+WORKDIR /service
 
 COPY service ./
+
+RUN go mod tidy
 
 RUN ls /service
 
