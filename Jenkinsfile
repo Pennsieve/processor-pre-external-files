@@ -7,12 +7,14 @@ ansiColor('xterm') {
 
   def authorName  = sh(returnStdout: true, script: 'git --no-pager show --format="%an" --no-patch')
   def serviceName = env.JOB_NAME.tokenize("/")[1]
-  def workspace = env.WORKSPACE
 
   try {
-    echo "workspace directory is ${workspace}"
 
-    stage("Run Tests") {
+    stage("Run Client Tests") {
+          sh "cd ./client && go test -v ./..."
+    }
+
+    stage("Run Service Tests") {
           sh "cd ./service && go test -v ./..."
     }
 
