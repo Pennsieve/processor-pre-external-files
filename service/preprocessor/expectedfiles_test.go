@@ -4,7 +4,7 @@ import (
 	crypto "crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"github.com/pennsieve/processor-pre-external-files/service/models"
+	"github.com/pennsieve/processor-pre-external-files/client/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"math/rand"

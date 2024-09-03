@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/pennsieve/processor-pre-external-files/service/models"
+	"github.com/pennsieve/processor-pre-external-files/client/models"
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"

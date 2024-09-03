@@ -3,8 +3,8 @@ package preprocessor
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pennsieve/processor-pre-external-files/client/models"
 	"github.com/pennsieve/processor-pre-external-files/service/logging"
-	"github.com/pennsieve/processor-pre-external-files/service/models"
 	"github.com/pennsieve/processor-pre-external-files/service/util"
 	"io"
 	"log/slog"
