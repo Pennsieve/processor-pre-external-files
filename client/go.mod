@@ -1,4 +1,4 @@
-module client
+module github.com/pennsieve/processor-pre-external-files/client
 
 go 1.21
 
